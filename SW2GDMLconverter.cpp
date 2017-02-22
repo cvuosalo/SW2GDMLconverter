@@ -32,6 +32,10 @@
 
 using namespace std;
 
+double Units_mm = 1000;
+
+double units = Units_mm;
+
 enum surfTypeIDs {
 	PLANE_ID = 4001, CYLINDER_ID, CONE_ID, SPHERE_ID, TORUS_ID, BSURF_ID, BLEND_ID,
 	OFFSET_ID, EXTRUSION_ID, S_REVOLVE_ID, VOLUME_ID, POSITION_ID, ROTATION_ID, SUBTRACTION_ID, DISK_ID, BOARD_ID
@@ -2515,9 +2519,9 @@ static void getFaceDistances(int faceIndList[20], int listSz, LPDISPATCH *srcptr
 		}
 		const char *const name = nameIncr(CONE_ID);
 		xmlElem beginEnd, attrib1, attrib2;
-		gdmlout << indent1 << beginEnd.openElem("cone") << attrib1.attribute("name", name) << attrib2.attribute("z", cone1->height);
-		gdmlout << attrib1.attribute("rmin1", inLgRadius) << attrib2.attribute("rmin2", inSmRadius);
-		gdmlout << attrib1.attribute("rmax1", outLgRadius) << attrib2.attribute("rmax2", outSmRadius);
+		gdmlout << indent1 << beginEnd.openElem("cone") << attrib1.attribute("name", name) << attrib2.attribute("z", cone1->height * units);
+		gdmlout << attrib1.attribute("rmin1", inLgRadius * units ) << attrib2.attribute("rmin2", inSmRadius * units);
+		gdmlout << attrib1.attribute("rmax1", outLgRadius * units ) << attrib2.attribute("rmax2", outSmRadius * units);
 		gdmlout << attrib1.attribute("deltaphi", "TWOPI") << beginEnd.closeElem() << endl;
 		return (name);
 	}
@@ -2542,8 +2546,8 @@ static void getFaceDistances(int faceIndList[20], int listSz, LPDISPATCH *srcptr
 			smRadius = 0;
 		const char *const name = nameIncr(CYLINDER_ID);
 		xmlElem beginEnd, attrib1, attrib2;
-		gdmlout << indent1 << beginEnd.openElem("tube") << attrib1.attribute("name", name) << attrib2.attribute("z", cyl1->length);
-		gdmlout << attrib1.attribute("rmin", smRadius) << attrib2.attribute("rmax", lgRadius);
+		gdmlout << indent1 << beginEnd.openElem("tube") << attrib1.attribute("name", name) << attrib2.attribute("z", cyl1->length * units);
+		gdmlout << attrib1.attribute("rmin", smRadius * units ) << attrib2.attribute("rmax", lgRadius * units);
 		gdmlout << attrib1.attribute("deltaphi", cyl1->angle) << beginEnd.closeElem() << endl;
 		return (name);
 	}
@@ -2573,8 +2577,8 @@ static void getFaceDistances(int faceIndList[20], int listSz, LPDISPATCH *srcptr
 			 smRadius = 0;
 		 const char *const name = nameIncr(TORUS_ID);
 		 xmlElem beginEnd, attrib1, attrib2;
-		 gdmlout << indent1 << beginEnd.openElem("torus") << attrib1.attribute("name", name) << attrib2.attribute("rtor", torus1->majorRadius);
-		 gdmlout << attrib1.attribute("rmin", smRadius) << attrib2.attribute("rmax", lgRadius);
+		 gdmlout << indent1 << beginEnd.openElem("torus") << attrib1.attribute("name", name) << attrib2.attribute("rtor", torus1->majorRadius * units );
+		 gdmlout << attrib1.attribute("rmin", smRadius * units ) << attrib2.attribute("rmax", lgRadius * units );
 		 gdmlout << attrib1.attribute("startphi", 0.0);
 		 gdmlout << attrib1.attribute("deltaphi", torus1->angle) << beginEnd.closeElem() << endl;
 		 return (name);
@@ -2604,8 +2608,8 @@ static void getFaceDistances(int faceIndList[20], int listSz, LPDISPATCH *srcptr
 		 if (newThick > MIN_THICKNESS && newThick < 0.7)
 			 thickness = newThick;
 		 gdmlout << indent1 << beginEnd.openElem("tube") << attrib1.attribute("name", name);
-		 gdmlout << attrib1.attribute("rmin", inRad) << attrib2.attribute("rmax", outRad);
-		 gdmlout << attrib1.attribute("deltaphi", angle) << attrib2.attribute("z", thickness) << beginEnd.closeElem() << endl;
+		 gdmlout << attrib1.attribute("rmin", inRad * units ) << attrib2.attribute("rmax", outRad * units );
+		 gdmlout << attrib1.attribute("deltaphi", angle) << attrib2.attribute("z", thickness * units ) << beginEnd.closeElem() << endl;
 		 return (name);
 	 }
 	 cout << "Bad disk indexes " << ind1 << " " << ind2 << endl;
@@ -2621,8 +2625,8 @@ static void getFaceDistances(int faceIndList[20], int listSz, LPDISPATCH *srcptr
 		 xmlElem beginEnd, attrib1, attrib2;
 		 gdmlout << indent1 << beginEnd.openElem("box") << attrib1.attribute("name", name);
 		 // y axis appears to be default long axis
-		 gdmlout << attrib1.attribute("x", board1->width) << attrib2.attribute("y", board1->length);
-		 gdmlout << attrib1.attribute("z", MIN_THICKNESS) << beginEnd.closeElem() << endl;
+		 gdmlout << attrib1.attribute("x", board1->width * units ) << attrib2.attribute("y", board1->length * units );
+		 gdmlout << attrib1.attribute("z", MIN_THICKNESS * units ) << beginEnd.closeElem() << endl;
 		 return (name);
 	 }
 	 cout << "Bad board indexes " << ind1 << " " << ind2 << endl;
@@ -2636,9 +2640,9 @@ static void getFaceDistances(int faceIndList[20], int listSz, LPDISPATCH *srcptr
 	 if (ellip1 != NULL && ellip2 != NULL) {
 		 const char *const name = nameIncr(S_REVOLVE_ID);
 		 xmlElem beginEnd, attrib1, attrib2;
-		 gdmlout << indent1 << beginEnd.openElem("ellipsoid") << attrib1.attribute("name", name) << attrib2.attribute("ax", ellip1->ax);
-		 gdmlout << attrib1.attribute("by", ellip1->by) << attrib2.attribute("cz", ellip1->cz);
-		 gdmlout << attrib1.attribute("zcut1", ellip1->zcutLow) << beginEnd.closeElem() << endl;
+		 gdmlout << indent1 << beginEnd.openElem("ellipsoid") << attrib1.attribute("name", name) << attrib2.attribute("ax", ellip1->ax * units );
+		 gdmlout << attrib1.attribute("by", ellip1->by * units ) << attrib2.attribute("cz", ellip1->cz * units );
+		 gdmlout << attrib1.attribute("zcut1", ellip1->zcutLow * units ) << beginEnd.closeElem() << endl;
 		 return (name);
 	 }
 	 cout << "Bad ellipsoid indexes " << ind1 << " " << ind2 << endl;
@@ -2691,7 +2695,7 @@ void AssemblyInfo::outputHole(const long baseInd, const long holeInd)
 	coords newRelPos = rotVecXYZ(relPos, revrot); // Also Apply base rotation to relative position to get position for GDML
 	cout << "Hole pos moves from " << relPos << " to " << newRelPos << endl;
 	gdmlout << indent2 << beginEnd.openElem("position") << attrib1.attribute("name", nameIncr(POSITION_ID));
-	gdmlout << attrib1.attribute("x", newRelPos.x) << attrib2.attribute("y", newRelPos.y) << attrib3.attribute("z", newRelPos.z);
+	gdmlout << attrib1.attribute("x", newRelPos.x * units ) << attrib2.attribute("y", newRelPos.y * units) << attrib3.attribute("z", newRelPos.z * units );
 	gdmlout << beginEnd.closeElem() << endl;
 	gdmlout << indent2 << beginEnd.openElem("rotation") << attrib1.attribute("name", nameIncr(ROTATION_ID));
 	gdmlout << attrib1.attribute("x", rotation.x) << attrib2.attribute("y", rotation.y);
@@ -2971,7 +2975,7 @@ void AssemblyInfo::outputParts()
 				cout << "Apply displacement displace: " << surfArray[it->surfInd]->displace << ", pos " << relPos << endl;
 			relPos = relPos + surfArray[it->surfInd]->displace;
 			gdmlout << indent3 << beginEnd.openElem("position") << attrib1.attribute("name", nameIncr(POSITION_ID));
-			gdmlout << attrib1.attribute("x", relPos.x) << attrib2.attribute("y", relPos.y) << attrib3.attribute("z", relPos.z);
+			gdmlout << attrib1.attribute("x", relPos.x * units ) << attrib2.attribute("y", relPos.y * units) << attrib3.attribute("z", relPos.z * units);
 			gdmlout << beginEnd.closeElem() << endl;
 			gdmlout << indent3 << beginEnd.openElem("rotation") << attrib1.attribute("name", nameIncr(ROTATION_ID));
 			gdmlout << attrib1.attribute("z", surfArray[it->surfInd]->rotation.z) << attrib2.attribute("y", surfArray[it->surfInd]->rotation.y);
